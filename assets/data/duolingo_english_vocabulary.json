@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "metadata": {
     "source": "duolingo_halflife_regression_dataset",
-    "generatedAt": "2026-07-17T19:11:12.976522+00:00",
+    "generatedAt": "2026-07-17T19:18:36.335930+00:00",
     "rowsScanned": 12854226,
     "englishRows": 5014791,
     "catalogRows": 4689398,
@@ -4393,7 +4393,7 @@
       "word": "summer",
       "lemma": "summer",
       "partOfSpeech": "n",
-      "meaning": "(kiến trúc) cái rầm ((cũng) )",
+      "meaning": "mùa hè",
       "lexemeIds": [
         "8d479b7e8746897912de9dc374882fdf"
       ],
@@ -6670,7 +6670,7 @@
       "word": "guard",
       "lemma": "guard",
       "partOfSpeech": "n",
-      "meaning": "(thể thao) sự thủ thế, sự giữ miếng (đấu gươm, quyền Anh...)",
+      "meaning": "bảo vệ, canh gác",
       "lexemeIds": [
         "3e9be7ef8bbcf40e1bb3ae3a443d989b"
       ],
@@ -6887,7 +6887,7 @@
       "word": "cycle",
       "lemma": "cycle",
       "partOfSpeech": "n",
-      "meaning": "(lý) chu ký, chu trình",
+      "meaning": "chu kỳ; xe đạp",
       "lexemeIds": [
         "171a78bdf72165770176578a19b4730c"
       ],
@@ -8892,7 +8892,7 @@
       "word": "popular",
       "lemma": "popular",
       "partOfSpeech": "adj",
-      "meaning": "(thuộc) nhân dân, của nhân dân, do nhân dân",
+      "meaning": "phổ biến",
       "lexemeIds": [
         "da5401cc1e8ab70286fb3beffe9deb84"
       ],
@@ -9939,7 +9939,7 @@
       "word": "official",
       "lemma": "official",
       "partOfSpeech": "adj",
-      "meaning": "(thuộc) chính quyền; (thuộc) văn phòng",
+      "meaning": "chính thức",
       "lexemeIds": [
         "ce79095c17cae2c02df55a3492125af1"
       ],
@@ -10456,7 +10456,7 @@
       "word": "bridge",
       "lemma": "bridge",
       "partOfSpeech": "n",
-      "meaning": "(đánh bài) brit",
+      "meaning": "cây cầu",
       "lexemeIds": [
         "7ac56359d01420803f98c9c80ef266e8"
       ],
@@ -11844,7 +11844,7 @@
       "word": "battery",
       "lemma": "battery",
       "partOfSpeech": "n",
-      "meaning": "(qsự) khẩu đội (pháo)",
+      "meaning": "pin",
       "lexemeIds": [
         "6da2ca498b5168a1358d05e38f869a4f"
       ],
@@ -12054,7 +12054,7 @@
       "word": "plane",
       "lemma": "plane",
       "partOfSpeech": "n",
-      "meaning": "(thực vật) cây tiêu huyền ((cũng) )",
+      "meaning": "máy bay; mặt phẳng",
       "lexemeIds": [
         "421a9643c14760de5e9364c6134e9df2",
         "c3be409a2ec48846b72a0836422deef1"
@@ -12160,7 +12160,7 @@
       "word": "ideal",
       "lemma": "ideal",
       "partOfSpeech": "adj",
-      "meaning": "(thuộc) quan niệm, (thuộc) tư tưởng",
+      "meaning": "lý tưởng",
       "lexemeIds": [
         "6ccd2d5d29431f023e92423a1c568541"
       ],
@@ -12372,7 +12372,7 @@
       "word": "phone",
       "lemma": "phone",
       "partOfSpeech": "n",
-      "meaning": "(ngôn) âm tỏ lời nói",
+      "meaning": "điện thoại",
       "lexemeIds": [
         "925d346847d23a64f6e74f6dbb905af7",
         "eb405205fe232a3236bedc42065e3345"
@@ -12796,7 +12796,7 @@
       "word": "pan",
       "lemma": "pan",
       "partOfSpeech": "n",
-      "meaning": "(thần thoại) thần đồng quê",
+      "meaning": "cái chảo",
       "lexemeIds": [
         "1fa0250a9286ddaa12dc55c4e89c0609"
       ],
@@ -13177,7 +13177,7 @@
       "word": "deals",
       "lemma": "deal",
       "partOfSpeech": "vblex",
-      "meaning": "((thường) +) phân phát, phân phối",
+      "meaning": "giao dịch, thỏa thuận",
       "lexemeIds": [
         "b4f066dd5635d78748aa8d3340292e74"
       ],
@@ -14233,7 +14233,7 @@
       "word": "add",
       "lemma": "add",
       "partOfSpeech": "vblex",
-      "meaning": "((thường) + ) cộng",
+      "meaning": "cộng, thêm vào",
       "lexemeIds": [
         "3e6012665dcdef80ad5663acf71caf0e",
         "66945ba210c86b5641f4a1225260344b",
@@ -14683,7 +14683,7 @@
       "word": "adds",
       "lemma": "add",
       "partOfSpeech": "vblex",
-      "meaning": "((thường) + ) cộng",
+      "meaning": "cộng, thêm vào",
       "lexemeIds": [
         "b47c2df644dd7f5bf2f2e501dedd3594"
       ],
@@ -14941,7 +14941,7 @@
       "word": "front",
       "lemma": "front",
       "partOfSpeech": "n",
-      "meaning": "(thơ ca) cái trán",
+      "meaning": "phía trước",
       "lexemeIds": [
         "9ae4625f5a6122c510ddc28906c08473"
       ],
@@ -15111,7 +15111,7 @@
       "word": "flag",
       "lemma": "flag",
       "partOfSpeech": "n",
-      "meaning": "(thực vật) cây irit",
+      "meaning": "lá cờ",
       "lexemeIds": [
         "ce2371e61266aea4c474ea20262b7ead"
       ],
@@ -16368,7 +16368,7 @@
       "word": "check",
       "lemma": "check",
       "partOfSpeech": "n",
-      "meaning": "(Mỹ)(như)",
+      "meaning": "kiểm tra",
       "lexemeIds": [
         "4b61bd9f38a162639e2f0bd714acbdeb"
       ],
@@ -16581,7 +16581,7 @@
       "word": "commitment",
       "lemma": "commitment",
       "partOfSpeech": "n",
-      "meaning": "trát bắt giam",
+      "meaning": "sự cam kết",
       "lexemeIds": [
         "0626e360d7cca5b54d3d5049bd9f5d58"
       ],
@@ -18139,7 +18139,7 @@
       "word": "neighborhood",
       "lemma": "neighborhood",
       "partOfSpeech": "n",
-      "meaning": "(Mỹ)(dân) hàng xóm",
+      "meaning": "khu phố",
       "lexemeIds": [
         "ecb399f37a86545e6f87ec4c61a3a73d"
       ],
@@ -20762,7 +20762,7 @@
       "word": "stay",
       "lemma": "stay",
       "partOfSpeech": "vblex",
-      "meaning": "(hàng hải) néo (cột buồm) bằng dây",
+      "meaning": "ở lại",
       "lexemeIds": [
         "71b5585e3c59bee07b7923509fa2e8c0",
         "860f3dec661054e064d5f3147803cabc"
@@ -21017,7 +21017,7 @@
       "word": "reach",
       "lemma": "reach",
       "partOfSpeech": "vblex",
-      "meaning": "(+) chìa ra, đưa (tay) ra",
+      "meaning": "đạt tới, chạm tới",
       "lexemeIds": [
         "4c1d20208d00b8b0bd6aa55a1e37e018"
       ],
@@ -21444,7 +21444,7 @@
       "word": "half",
       "lemma": "half",
       "partOfSpeech": "n",
-      "meaning": "(một) nửa, phân chia đôi",
+      "meaning": "một nửa",
       "lexemeIds": [
         "d11c803c74e6e1a5878dd71975b4979c"
       ],
@@ -21657,7 +21657,7 @@
       "word": "test",
       "lemma": "test",
       "partOfSpeech": "n",
-      "meaning": "(động vật) vỏ (tôm, cua) ; mai (rùa)",
+      "meaning": "bài kiểm tra; kiểm tra",
       "lexemeIds": [
         "d8fb66d83b9daf33ff1f7fe9fc455f6d"
       ],
@@ -21953,7 +21953,7 @@
       "word": "reached",
       "lemma": "reach",
       "partOfSpeech": "vblex",
-      "meaning": "(+) chìa ra, đưa (tay) ra",
+      "meaning": "đạt tới, chạm tới",
       "lexemeIds": [
         "16849f7c84450e13d864046c2c8e0640"
       ],
@@ -23662,7 +23662,7 @@
       "word": "delivers",
       "lemma": "deliver",
       "partOfSpeech": "vblex",
-      "meaning": "(+) cứu, cứu khỏi, giải thoát",
+      "meaning": "giao, chuyển",
       "lexemeIds": [
         "460e1d7693bda8c28f732a4068c448cf"
       ],
@@ -23956,7 +23956,7 @@
       "word": "theater",
       "lemma": "theater",
       "partOfSpeech": "n",
-      "meaning": "(Mỹ)(như)",
+      "meaning": "nhà hát, rạp hát",
       "lexemeIds": [
         "79b69b6afe7504da50f3312c036d1248"
       ],
@@ -24337,7 +24337,7 @@
       "word": "members",
       "lemma": "member",
       "partOfSpeech": "n",
-      "meaning": "(sinh vật) chân, tay, chi",
+      "meaning": "thành viên",
       "lexemeIds": [
         "a266ae0a2bc2d08805b8ad104464f3e9"
       ],
@@ -24379,7 +24379,7 @@
       "word": "deliver",
       "lemma": "deliver",
       "partOfSpeech": "vblex",
-      "meaning": "(+) cứu, cứu khỏi, giải thoát",
+      "meaning": "giao, chuyển",
       "lexemeIds": [
         "81cd01d9bce5400cd67fe75e6ddfa0a4"
       ],
@@ -24571,7 +24571,7 @@
       "word": "nice",
       "lemma": "nice",
       "partOfSpeech": "adj",
-      "meaning": "(tục) thú vị, dễ chịu; tốt, hấp dẫn",
+      "meaning": "đẹp, dễ chịu",
       "lexemeIds": [
         "def9501ae58cf389337c8cfc67c81c0d"
       ],
@@ -24592,7 +24592,7 @@
       "word": "added",
       "lemma": "add",
       "partOfSpeech": "vblex",
-      "meaning": "((thường) + ) cộng",
+      "meaning": "cộng, thêm vào",
       "lexemeIds": [
         "d6232e31b4b5df7fe1023a1dc6028aeb"
       ],
@@ -26172,7 +26172,7 @@
       "word": "stayed",
       "lemma": "stay",
       "partOfSpeech": "vblex",
-      "meaning": "(hàng hải) néo (cột buồm) bằng dây",
+      "meaning": "ở lại",
       "lexemeIds": [
         "52781a6fc0a0acf2d06a18406897018d"
       ],
@@ -26636,7 +26636,7 @@
       "word": "grade",
       "lemma": "grade",
       "partOfSpeech": "n",
-      "meaning": "(toán) Grát",
+      "meaning": "điểm số; lớp",
       "lexemeIds": [
         "de8be5a5fcf6e5b163052adec331edcd"
       ],
@@ -26699,7 +26699,7 @@
       "word": "goal",
       "lemma": "goal",
       "partOfSpeech": "n",
-      "meaning": "(thể thao) khung thành gồm",
+      "meaning": "mục tiêu; bàn thắng",
       "lexemeIds": [
         "ad36e87fa0b66b7422688ad41aad5975"
       ],
@@ -27309,7 +27309,7 @@
       "word": "profile",
       "lemma": "profile",
       "partOfSpeech": "n",
-      "meaning": "(Mỹ) nét mặt nhìn nghiêng; mặt nghiêng",
+      "meaning": "hồ sơ cá nhân",
       "lexemeIds": [
         "8f71b89642eec605e67e571b2761ed9c"
       ],
@@ -28299,7 +28299,7 @@
       "word": "review",
       "lemma": "review",
       "partOfSpeech": "n",
-      "meaning": "(pháp lý) sự xem lại, sự xét lại (một bản án)",
+      "meaning": "ôn tập; đánh giá",
       "lexemeIds": [
         "0f825f83e2833447b1493c7fdb107441"
       ],
@@ -29476,7 +29476,7 @@
       "word": "behavior",
       "lemma": "behavior",
       "partOfSpeech": "n",
-      "meaning": "(kỹ) cách xử lý, chế độ; hành vi, trạng thái",
+      "meaning": "hành vi",
       "lexemeIds": [
         "0a440eab2ac0d8c810a9fddf43464354"
       ],
@@ -29602,7 +29602,7 @@
       "word": "record",
       "lemma": "record",
       "partOfSpeech": "n",
-      "meaning": "(pháp lý) hồ sơ",
+      "meaning": "bản ghi; ghi lại",
       "lexemeIds": [
         "4ab2b3260195b2f6689bddd580a506a0"
       ],
@@ -29813,7 +29813,7 @@
       "word": "deal",
       "lemma": "deal",
       "partOfSpeech": "n",
-      "meaning": "gỗ tùng, gỗ thông",
+      "meaning": "giao dịch, thỏa thuận",
       "lexemeIds": [
         "8d1a40719c65371110d10dddeed8fb88"
       ],
@@ -30422,7 +30422,7 @@
       "word": "concern",
       "lemma": "concern",
       "partOfSpeech": "n",
-      "meaning": "(+) sự liên quan tới, sự dính líu tới",
+      "meaning": "mối quan tâm",
       "lexemeIds": [
         "7cc5f3f58bb64b86603c3589e3b6ba0c"
       ],
@@ -31388,7 +31388,7 @@
       "word": "defense",
       "lemma": "defense",
       "partOfSpeech": "n",
-      "meaning": "(Mỹ)(như)",
+      "meaning": "sự phòng thủ, bảo vệ",
       "lexemeIds": [
         "757f88bde634a340a4e237e224974c3e"
       ],
@@ -31913,7 +31913,7 @@
       "word": "exit",
       "lemma": "exit",
       "partOfSpeech": "n",
-      "meaning": "(sân khấu) sự đi vào (của diễn viên)",
+      "meaning": "lối ra",
       "lexemeIds": [
         "1ad8ff7814afac7d985ca5cee4afa2ca"
       ],
@@ -34163,7 +34163,7 @@
       "word": "solution",
       "lemma": "solution",
       "partOfSpeech": "n",
-      "meaning": "sự hoà tan",
+      "meaning": "giải pháp",
       "lexemeIds": [
         "fec9bec9ebabe340cb3cf1524943ffeb"
       ],
@@ -35111,7 +35111,7 @@
       "word": "terms",
       "lemma": "term",
       "partOfSpeech": "n",
-      "meaning": "hạn, giới hạn, định hạn",
+      "meaning": "thuật ngữ; học kỳ",
       "lexemeIds": [
         "53993ef63dd2e6610f6dd1c688fb0403"
       ],
@@ -35468,7 +35468,7 @@
       "word": "phones",
       "lemma": "phone",
       "partOfSpeech": "n",
-      "meaning": "(ngôn) âm tỏ lời nói",
+      "meaning": "điện thoại",
       "lexemeIds": [
         "6954d4db18d6a286cf9c83b7a4749b37"
       ],
@@ -36413,7 +36413,7 @@
       "word": "power",
       "lemma": "power",
       "partOfSpeech": "n",
-      "meaning": "khả năng, tài năng, năng lực",
+      "meaning": "sức mạnh; quyền lực",
       "lexemeIds": [
         "f65cd0c52a113df8b7310bd0c6d4f8fc"
       ],
@@ -36455,7 +36455,7 @@
       "word": "solutions",
       "lemma": "solution",
       "partOfSpeech": "n",
-      "meaning": "sự hoà tan",
+      "meaning": "giải pháp",
       "lexemeIds": [
         "4f2bbda8a5a59284a726ca41f050ed99"
       ],
@@ -36581,7 +36581,7 @@
       "word": "term",
       "lemma": "term",
       "partOfSpeech": "n",
-      "meaning": "hạn, giới hạn, định hạn",
+      "meaning": "thuật ngữ; học kỳ",
       "lexemeIds": [
         "39200296887deee51d19496c472bcb62"
       ],

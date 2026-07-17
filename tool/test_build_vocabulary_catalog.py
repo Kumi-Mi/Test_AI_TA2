@@ -228,6 +228,7 @@ class VocabularyCatalogPipelineTest(unittest.TestCase):
                 "turtle": "[01* dtừ]\\n- (như) [03turtle-dove]\\n- con rùa",
                 "let": "[01* ngđtừ]\\n- (cổ) ngăn cản\\n[01* ngđtừ let]\\n- để cho, cho phép",
                 "want": "[01* ngđtừ]\\n- thiếu\\n- muốn",
+                "summer": "[01* dtừ]\\n- (kiến trúc) cái rầm\\n- mùa hè",
             }
         )
 
@@ -235,6 +236,7 @@ class VocabularyCatalogPipelineTest(unittest.TestCase):
         self.assertEqual(resolve_gloss(dictionary, "turtle", "turtles", "n"), "con rùa")
         self.assertEqual(resolve_gloss(dictionary, "let", "lets", "vblex"), "cho phép, để cho")
         self.assertEqual(resolve_gloss(dictionary, "want", "wanted", "vblex"), "muốn")
+        self.assertEqual(resolve_gloss(dictionary, "summer", "summer", "n"), "mùa hè")
 
 
 if __name__ == "__main__":

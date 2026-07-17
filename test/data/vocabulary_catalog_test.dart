@@ -154,5 +154,8 @@ void main() {
     expect(byWord['turtles']!.meaning, contains('rùa'));
     expect(byWord['want']!.meaning, 'muốn');
     expect(byWord['let']!.meaning, 'cho phép, để cho');
+    expect(byWord['summer']!.meaning, 'mùa hè');
+    expect(byWord['bridge']!.meaning, 'cây cầu');
+    expect(byWord['phone']!.meaning, 'điện thoại');
   });
 }
