@@ -86,7 +86,9 @@ class _AppShellState extends State<AppShell> {
     ),
     _AppDestination.game => AdaptiveGameScreen(controller: widget.controller),
     _AppDestination.custom => const CustomInputScreen(),
-    _AppDestination.lab => const MlLabScreen(),
+    _AppDestination.lab => MlLabScreen(
+      catalogMetadata: widget.controller.catalogMetadata,
+    ),
   };
 }
 

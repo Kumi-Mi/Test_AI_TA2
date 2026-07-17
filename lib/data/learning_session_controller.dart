@@ -8,13 +8,17 @@ import '../domain/learning_models.dart';
 import '../ml/adaptive_difficulty_adapter.dart';
 import '../ml/adaptive_learning_planner.dart';
 import '../ml/half_life_memory_predictor.dart';
+import 'vocabulary_catalog.dart';
 
 class LearningSessionController extends ChangeNotifier {
   LearningSessionController._({
     required List<VocabularyMemory> vocabulary,
+    required List<VocabularyMemory> initialVocabulary,
+    required this.catalogMetadata,
     this._preferences,
     this._planner = const AdaptiveLearningPlanner(),
   }) : _vocabulary = vocabulary,
+       _initialVocabulary = List.unmodifiable(initialVocabulary),
        _baselineResponseSeconds = _meanResponseSeconds(vocabulary);
 
   static const _storageKey = 'learnflow_vocabulary_v1';
@@ -22,6 +26,8 @@ class LearningSessionController extends ChangeNotifier {
   final AdaptiveLearningPlanner _planner;
   final DateTime _startedAt = DateTime.now();
   final double _baselineResponseSeconds;
+  final List<VocabularyMemory> _initialVocabulary;
+  final VocabularyCatalogMetadata catalogMetadata;
   List<VocabularyMemory> _vocabulary;
   int _wins = 0;
   int _losses = 0;
@@ -32,14 +38,18 @@ class LearningSessionController extends ChangeNotifier {
   static Future<LearningSessionController> create() async {
     final preferences = await SharedPreferences.getInstance();
     final planner = await _loadPlanner();
+    final catalog = await _loadCatalog();
     final stored = preferences.getString(_storageKey);
     if (stored != null) {
       try {
         final list = jsonDecode(stored) as List<dynamic>;
+        final progress = list
+            .map((item) => _fromJson(item as Map<String, dynamic>))
+            .toList();
         return LearningSessionController._(
-          vocabulary: list
-              .map((item) => _fromJson(item as Map<String, dynamic>))
-              .toList(),
+          vocabulary: catalog.mergeProgress(progress),
+          initialVocabulary: catalog.vocabulary,
+          catalogMetadata: catalog.metadata,
           preferences: preferences,
           planner: planner,
         );
@@ -48,15 +58,20 @@ class LearningSessionController extends ChangeNotifier {
       }
     }
     return LearningSessionController._(
-      vocabulary: List.of(_seedVocabulary),
+      vocabulary: List.of(catalog.vocabulary),
+      initialVocabulary: catalog.vocabulary,
+      catalogMetadata: catalog.metadata,
       preferences: preferences,
       planner: planner,
     );
   }
 
   factory LearningSessionController.demo({List<VocabularyMemory>? vocabulary}) {
+    final initial = List.of(vocabulary ?? _seedVocabulary);
     return LearningSessionController._(
-      vocabulary: List.of(vocabulary ?? _seedVocabulary),
+      vocabulary: List.of(initial),
+      initialVocabulary: initial,
+      catalogMetadata: VocabularyCatalogMetadata.fallback(initial.length),
     );
   }
 
@@ -119,6 +134,11 @@ class LearningSessionController extends ChangeNotifier {
       meaning: old.meaning,
       features: newFeatures,
       lastSeenAt: DateTime.now(),
+      lemma: old.lemma,
+      partOfSpeech: old.partOfSpeech,
+      traceCount: old.traceCount,
+      lexemeCount: old.lexemeCount,
+      datasetRecall: old.datasetRecall,
     );
 
     _totalResponseSeconds += responseSeconds;
@@ -136,7 +156,7 @@ class LearningSessionController extends ChangeNotifier {
   }
 
   Future<void> resetDemoData() async {
-    _vocabulary = List.of(_seedVocabulary);
+    _vocabulary = List.of(_initialVocabulary);
     _wins = 0;
     _losses = 0;
     _consecutiveWins = 0;
@@ -161,6 +181,11 @@ class LearningSessionController extends ChangeNotifier {
     'historySeen': item.features.historySeen,
     'historyCorrect': item.features.historyCorrect,
     'lastSeenAt': item.lastSeenAt?.toIso8601String(),
+    'lemma': item.lemma,
+    'partOfSpeech': item.partOfSpeech,
+    'traceCount': item.traceCount,
+    'lexemeCount': item.lexemeCount,
+    'datasetRecall': item.datasetRecall,
   };
 
   static VocabularyMemory _fromJson(Map<String, dynamic> json) {
@@ -172,6 +197,11 @@ class LearningSessionController extends ChangeNotifier {
         final String value => DateTime.tryParse(value),
         _ => null,
       },
+      lemma: json['lemma'] as String?,
+      partOfSpeech: json['partOfSpeech'] as String?,
+      traceCount: (json['traceCount'] as num?)?.toInt() ?? 0,
+      lexemeCount: (json['lexemeCount'] as num?)?.toInt() ?? 0,
+      datasetRecall: (json['datasetRecall'] as num?)?.toDouble(),
       features: WordMemoryFeatures(
         responseTimeSeconds: (json['responseTimeSeconds'] as num).toDouble(),
         errorCount: json['errorCount'] as int,
@@ -202,6 +232,17 @@ class LearningSessionController extends ChangeNotifier {
       );
     } on Object {
       return const AdaptiveLearningPlanner();
+    }
+  }
+
+  static Future<VocabularyCatalog> _loadCatalog() async {
+    try {
+      return await VocabularyCatalog.load();
+    } on Object {
+      return VocabularyCatalog(
+        metadata: VocabularyCatalogMetadata.fallback(_seedVocabulary.length),
+        vocabulary: _seedVocabulary,
+      );
     }
   }
 

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../../data/vocabulary_catalog.dart';
 import '../../domain/learning_models.dart';
 import '../../ml/adaptive_difficulty_adapter.dart';
 import '../../theme/design_tokens.dart';
 import '../../widgets/learnflow_components.dart';
 
 class MlLabScreen extends StatefulWidget {
-  const MlLabScreen({super.key});
+  const MlLabScreen({required this.catalogMetadata, super.key});
+
+  final VocabularyCatalogMetadata catalogMetadata;
 
   @override
   State<MlLabScreen> createState() => _MlLabScreenState();
@@ -122,20 +125,26 @@ class _MlLabScreenState extends State<MlLabScreen> {
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: AppSpace.md),
-        const LearnflowCard(
+        LearnflowCard(
           color: AppColors.cyan,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              MonoLabel('1 · Trí nhớ từ vựng', color: AppColors.ink),
-              SizedBox(height: AppSpace.sm),
-              Text(
+              const MonoLabel('1 · Trí nhớ từ vựng', color: AppColors.ink),
+              const SizedBox(height: AppSpace.sm),
+              const Text(
                 'Half-Life Regression',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
-              SizedBox(height: AppSpace.xs),
+              const SizedBox(height: AppSpace.xs),
               Text(
-                'Duolingo cung cấp p_recall, delta, history_seen và history_correct. App nạp artifact memory_model.json; trường source và training trong tệp cho biết provenance cùng kết quả validation.',
+                'Đã nạp ${widget.catalogMetadata.catalogEntries} từ từ ${widget.catalogMetadata.englishRows} trace tiếng Anh. Toàn bộ ${widget.catalogMetadata.columnsUsed.length} cột CSV được dùng cho model hoặc thống kê catalog.',
+              ),
+              const SizedBox(height: AppSpace.xs),
+              Text(
+                'Dữ liệu ${widget.catalogMetadata.tracePeriodLabel} · '
+                '${widget.catalogMetadata.languageCounts.length} ngôn ngữ học · '
+                '${widget.catalogMetadata.uiLanguageCounts.length} ngôn ngữ giao diện tiếng Anh.',
               ),
             ],
           ),

@@ -1,16 +1,16 @@
 # LearnFlow
 
-MVP Flutter cho đề tài **“Mobile App học tiếng Anh và ứng dụng học máy dự đoán lộ trình học”**.
+Ứng dụng Flutter cho đề tài **“Mobile App học tiếng Anh và ứng dụng học máy dự đoán lộ trình học”**.
 
-## Những gì đã chạy được
+## Trạng thái hiện tại
 
-- Mini-game từ vựng rơi và giải mã chữ ghi thời gian phản xạ, đúng/sai sau từng lượt.
-- Half-Life Regression dự đoán xác suất nhớ, half-life và thời điểm ôn tiếp theo.
-- Softmax ba lớp dự đoán `quá tải / tập trung / nhàm chán` để chọn độ khó.
-- Custom Input biến đoạn văn riêng thành bài Nghe, Nói, Đọc hoặc Viết.
-- TTS đọc câu tiếng Anh; speech-to-text thu câu nói và chấm độ tương đồng theo từ.
-- ML Lab cho phép thay đổi dữ liệu đầu vào và xem quyết định độ khó trực tiếp.
-- Trọng số model được nạp từ JSON, sẵn sàng thay bằng kết quả huấn luyện.
+- Mini-game bắt từ rơi và giải mã chữ dùng kho **1.719 từ/cụm từ Anh–Việt**, không còn giới hạn ở 8 từ mẫu.
+- Kho từ được tạo từ **5.014.791 trace học tiếng Anh** trong toàn bộ **12.854.226 dòng** của bộ Duolingo HLR; pipeline kiểm tra và sử dụng đủ 12 cột CSV.
+- Half-Life Regression (HLR) được huấn luyện trên toàn bộ dữ liệu: 11.530.392 dòng train, 1.323.834 dòng validation, MAE recall 0,11337.
+- HLR dự đoán xác suất nhớ, half-life và thời điểm ôn; planner ưu tiên từ có nguy cơ quên.
+- Bộ phân loại softmax dự đoán `quá tải / tập trung / nhàm chán` để chọn nhịp chơi và độ khó.
+- Custom Input biến văn bản riêng thành bài Nghe, Nói, Đọc hoặc Viết; TTS đọc câu và speech-to-text chấm độ giống theo từ.
+- Tiến trình cá nhân được ghép lên catalog mới và lưu cục bộ bằng `SharedPreferences`.
 
 ## Chạy app
 
@@ -19,23 +19,43 @@ flutter pub get
 flutter run
 ```
 
-Microphone và speech recognition đã được khai báo cho Android/iOS. Trên máy ảo không có dịch vụ nhận dạng giọng nói, hãy thử trên thiết bị thật; ba chế độ còn lại vẫn hoạt động.
+Sau khi thay asset dữ liệu, hãy dừng app và chạy lại hoàn toàn thay vì chỉ hot reload. Microphone và speech recognition đã được khai báo cho Android/iOS; nên thử chức năng Nói trên thiết bị thật.
 
-## Kiểm tra
+## Kiểm tra và build
 
 ```powershell
 flutter analyze
 flutter test
 flutter build web
+flutter build apk --debug
 ```
 
-Các test tập trung vào seam công khai của HLR, bộ điều chỉnh độ khó, planner và bộ chấm lời nói.
+APK debug được tạo tại `build/app/outputs/flutter-apk/app-debug.apk`.
 
-## Huấn luyện model
+## Tái tạo dữ liệu từ CSV
+
+CSV gốc dung lượng lớn được đặt trong `data_csv/` và bị Git bỏ qua. App không đọc file `.csv.gz` trên điện thoại; app đọc hai asset đã xử lý sẵn:
+
+- `assets/models/memory_model.json`: trọng số HLR;
+- `assets/data/duolingo_english_vocabulary.json`: catalog từ, nghĩa và prior thống kê.
+
+Dùng Python đã đi kèm Codex trên máy hiện tại:
 
 ```powershell
-python tool/train_hlr.py D:\data\learning_traces.13m.csv.gz --max-rows 100000
-python tool/train_engagement.py data\labelled_sessions.csv
+$py = 'C:\Users\Komi\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
+
+& $py .\tool\train_hlr.py `
+  .\data_csv\settles.acl16.learning_traces.13m.csv.gz
+
+& $py .\tool\build_vocabulary_catalog.py `
+  .\data_csv\settles.acl16.learning_traces.13m.csv.gz `
+  --dictionary-dir .\data_csv\engvie_jar\dictionary
 ```
 
-Xem [thiết kế ML](docs/ML_DESIGN.md) để biết schema, nguồn dữ liệu, giới hạn và cách đánh giá. Dữ liệu Duolingo không được chép vào repository này; tải từ [duolingo/halflife-regression](https://github.com/duolingo/halflife-regression) theo điều khoản của nguồn.
+Nghĩa tiếng Việt lấy từ Free Vietnamese Dictionary Project (FVDP), bản đóng gói DictionaryForMIDs English–Vietnamese 109k. Tải từ [trang từ điển DictionaryForMIDs](https://dictionarymid.sourceforge.net/dictionaries/dictsVietnameese.html), giải nén JAR và đặt các file `directoryEng*.csv` dưới thư mục truyền cho `--dictionary-dir`.
+
+Xem [thiết kế ML](docs/ML_DESIGN.md) để biết ánh xạ từng cột, giới hạn mô hình và cách đánh giá. Xem [thông báo bên thứ ba](THIRD_PARTY_NOTICES.md) để biết nguồn và giấy phép dữ liệu.
+
+## Giới hạn cần nói rõ khi bảo vệ
+
+Bộ Duolingo không có thời gian phản xạ, số lỗi gõ của LearnFlow, cũng không có nhãn `quá tải / tập trung / nhàm chán`. Vì vậy các trọng số tương ứng vẫn là cold-start và sẽ được fine-tune khi thu đủ log/nhãn từ người dùng thật. Điểm Nói hiện đo độ giống bản chép lời, chưa phải chấm âm vị.

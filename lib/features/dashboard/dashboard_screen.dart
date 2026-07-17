@@ -23,6 +23,7 @@ class DashboardScreen extends StatelessWidget {
       animation: controller,
       builder: (context, _) {
         final plan = controller.plan;
+        final catalog = controller.catalogMetadata;
         final atRisk = plan.orderedVocabulary
             .where((item) => item.prediction.isAtRisk)
             .length;
@@ -45,7 +46,10 @@ class DashboardScreen extends StatelessWidget {
               ),
               sliver: SliverList.list(
                 children: [
-                  const MonoLabel('Lộ trình thích nghi · dữ liệu mẫu'),
+                  MonoLabel(
+                    '${_formatCount(catalog.catalogEntries)} từ · '
+                    '${_formatCount(catalog.englishRows)} trace tiếng Anh',
+                  ),
                   const SizedBox(height: AppSpace.sm),
                   Text(
                     'Hôm nay nên học gì?',
@@ -72,6 +76,8 @@ class DashboardScreen extends StatelessWidget {
                   _ModelExplanation(
                     plan: plan,
                     session: controller.sessionFeatures,
+                    corpusRows: catalog.rowsScanned,
+                    corpusColumns: catalog.columnsUsed.length,
                   ),
                   const SizedBox(height: AppSpace.xl),
                   _QuickActions(onCustomInput: openCustomInput),
@@ -247,10 +253,17 @@ class _MetricChip extends StatelessWidget {
 }
 
 class _ModelExplanation extends StatelessWidget {
-  const _ModelExplanation({required this.plan, required this.session});
+  const _ModelExplanation({
+    required this.plan,
+    required this.session,
+    required this.corpusRows,
+    required this.corpusColumns,
+  });
 
   final AdaptiveLearningPlan plan;
   final SessionFeatures session;
+  final int corpusRows;
+  final int corpusColumns;
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +289,7 @@ class _ModelExplanation extends StatelessWidget {
               const SizedBox(width: AppSpace.sm),
               Expanded(
                 child: Text(
-                  'Softmax phân loại trạng thái; HLR xếp từ theo xác suất nhớ. Kết quả này là suy luận trên thiết bị.',
+                  'HLR dùng ${_formatCount(corpusRows)} dòng / $corpusColumns cột dữ liệu để xếp từ theo xác suất nhớ. Softmax phân loại trạng thái phiên; suy luận chạy trên thiết bị.',
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: AppColors.ink),
@@ -422,6 +435,18 @@ class _VocabularyRow extends StatelessWidget {
               children: [
                 Text(item.word, style: Theme.of(context).textTheme.titleLarge),
                 Text(item.meaning),
+                if (item.traceCount > 0)
+                  Text(
+                    [
+                      if (item.lemma != null && item.lemma != item.word)
+                        'gốc ${item.lemma}',
+                      if (item.partOfSpeech != null)
+                        _partOfSpeechLabel(item.partOfSpeech!),
+                      '${_formatCount(item.traceCount)} trace · '
+                      '${item.lexemeCount} lexeme',
+                    ].join(' · '),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
               ],
             ),
           ),
@@ -434,3 +459,19 @@ class _VocabularyRow extends StatelessWidget {
     );
   }
 }
+
+String _formatCount(int value) => value.toString().replaceAllMapped(
+  RegExp(r'\B(?=(\d{3})+(?!\d))'),
+  (_) => '.',
+);
+
+String _partOfSpeechLabel(String value) => switch (value) {
+  'n' => 'danh từ',
+  'vblex' || 'vbser' || 'vbhaver' || 'vbmod' => 'động từ',
+  'adj' => 'tính từ',
+  'adv' => 'trạng từ',
+  'prn' => 'đại từ',
+  'det' => 'từ hạn định',
+  'pr' => 'giới từ',
+  _ => value,
+};

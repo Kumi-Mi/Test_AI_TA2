@@ -2,6 +2,32 @@
 
 LearnFlow dùng hai mô hình riêng vì “sắp quên một từ” và “trạng thái của cả phiên học” là hai mục tiêu khác nhau. Ghép chúng vào một nhãn duy nhất sẽ khiến kết quả khó giải thích và khó đánh giá.
 
+## 0. Pipeline dữ liệu dùng trong app
+
+File CSV gốc không được đưa nguyên vào APK. Hai pipeline streaming đọc toàn bộ file nén mà không nạp 379 MB vào RAM:
+
+1. `train_hlr.py` học trọng số HLR và ghi `assets/models/memory_model.json`.
+2. `build_vocabulary_catalog.py` lọc trace có `learning_language=en`, tách surface/lemma/từ loại, ghép nghĩa FVDP và ghi `assets/data/duolingo_english_vocabulary.json`.
+
+Catalog hiện có 1.719 mục từ từ 5.014.791 trace tiếng Anh. Khi app khởi động, `VocabularyCatalog` nạp asset này; tiến trình cá nhân cũ được ghép theo từ nên người dùng không mất lịch sử.
+
+| Cột CSV | Cách sử dụng |
+| --- | --- |
+| `p_recall` | Nhãn huấn luyện HLR; mean recall của từng từ trong catalog |
+| `timestamp` | Khoảng thời gian corpus và mốc trace đầu/cuối của từng từ |
+| `delta` | Thời gian trên đường cong quên; prior `hoursSinceLastSeen` |
+| `user_id` | Chia train/validation theo người học và đếm learner duy nhất |
+| `learning_language` | Thống kê corpus và lọc nội dung tiếng Anh cho mini-game |
+| `ui_language` | Thống kê nhóm ngôn ngữ giao diện của trace tiếng Anh |
+| `lexeme_id` | Giữ truy vết và đếm các lexeme tạo nên một mục từ |
+| `lexeme_string` | Tạo surface word, lemma và part-of-speech để ghép đúng nghĩa |
+| `history_seen` | Đặc trưng HLR và prior số lần đã gặp |
+| `history_correct` | Đặc trưng độ chính xác và prior số lần đúng |
+| `session_seen` | Tổng lượt trong phiên; cùng `session_correct` tạo prior lỗi |
+| `session_correct` | Độ chính xác phiên và prior `errorCount` ban đầu |
+
+Các prior từ corpus chỉ khởi tạo thứ tự học. Ngay khi người dùng trả lời, thời gian phản xạ, đúng/sai và thời điểm gặp của chính họ sẽ cập nhật và được ưu tiên.
+
 ## 1. Mô hình trí nhớ từ vựng
 
 LearnFlow dựa trên Half-Life Regression (HLR) của Settles & Meeder. Với `h` là half-life của một từ và `Δ` là thời gian từ lần gặp gần nhất:
@@ -31,10 +57,10 @@ Nguồn gốc: [mã và dữ liệu HLR của Duolingo](https://github.com/duoli
 ### Huấn luyện
 
 ```powershell
-python tool/train_hlr.py D:\data\learning_traces.13m.csv.gz --max-rows 100000
+python tool/train_hlr.py .\data_csv\settles.acl16.learning_traces.13m.csv.gz
 ```
 
-Kết quả ghi thẳng vào `assets/models/memory_model.json`; Flutter nạp tệp này khi khởi động. Bỏ `--max-rows` khi chạy thí nghiệm chính thức. Script chia train/validation theo `user_id`, tránh để cùng một người xuất hiện ở cả hai tập.
+Kết quả ghi thẳng vào `assets/models/memory_model.json`; Flutter nạp tệp này khi khởi động. Lần huấn luyện hiện tại dùng 11.530.392 dòng train và 1.323.834 dòng validation, đạt MAE recall 0,11337. Script chia train/validation theo `user_id`, tránh để cùng một người xuất hiện ở cả hai tập.
 
 ## 2. Mô hình trạng thái phiên
 

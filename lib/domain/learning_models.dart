@@ -93,6 +93,11 @@ class VocabularyMemory {
     required this.meaning,
     required this.features,
     this.lastSeenAt,
+    this.lemma,
+    this.partOfSpeech,
+    this.traceCount = 0,
+    this.lexemeCount = 0,
+    this.datasetRecall,
   });
 
   final String id;
@@ -100,6 +105,11 @@ class VocabularyMemory {
   final String meaning;
   final WordMemoryFeatures features;
   final DateTime? lastSeenAt;
+  final String? lemma;
+  final String? partOfSpeech;
+  final int traceCount;
+  final int lexemeCount;
+  final double? datasetRecall;
 
   VocabularyMemory atTime(DateTime now) {
     if (lastSeenAt == null) return this;
@@ -115,6 +125,11 @@ class VocabularyMemory {
         hoursSinceLastSeen: features.hoursSinceLastSeen + elapsedHours,
       ),
       lastSeenAt: lastSeenAt,
+      lemma: lemma,
+      partOfSpeech: partOfSpeech,
+      traceCount: traceCount,
+      lexemeCount: lexemeCount,
+      datasetRecall: datasetRecall,
     );
   }
 }
@@ -128,6 +143,11 @@ class PlannedVocabulary {
   String get id => item.id;
   String get word => item.word;
   String get meaning => item.meaning;
+  String? get lemma => item.lemma;
+  String? get partOfSpeech => item.partOfSpeech;
+  int get traceCount => item.traceCount;
+  int get lexemeCount => item.lexemeCount;
+  double? get datasetRecall => item.datasetRecall;
 }
 
 class AdaptiveLearningPlan {
