@@ -128,17 +128,9 @@ class LearningSessionController extends ChangeNotifier {
       historySeen: oldFeatures.historySeen + 1,
       historyCorrect: oldFeatures.historyCorrect + (correct ? 1 : 0),
     );
-    _vocabulary[index] = VocabularyMemory(
-      id: old.id,
-      word: old.word,
-      meaning: old.meaning,
+    _vocabulary[index] = old.copyWith(
       features: newFeatures,
       lastSeenAt: DateTime.now(),
-      lemma: old.lemma,
-      partOfSpeech: old.partOfSpeech,
-      traceCount: old.traceCount,
-      lexemeCount: old.lexemeCount,
-      datasetRecall: old.datasetRecall,
     );
 
     _totalResponseSeconds += responseSeconds;
@@ -185,7 +177,6 @@ class LearningSessionController extends ChangeNotifier {
     'partOfSpeech': item.partOfSpeech,
     'traceCount': item.traceCount,
     'lexemeCount': item.lexemeCount,
-    'datasetRecall': item.datasetRecall,
   };
 
   static VocabularyMemory _fromJson(Map<String, dynamic> json) {
@@ -201,7 +192,6 @@ class LearningSessionController extends ChangeNotifier {
       partOfSpeech: json['partOfSpeech'] as String?,
       traceCount: (json['traceCount'] as num?)?.toInt() ?? 0,
       lexemeCount: (json['lexemeCount'] as num?)?.toInt() ?? 0,
-      datasetRecall: (json['datasetRecall'] as num?)?.toDouble(),
       features: WordMemoryFeatures(
         responseTimeSeconds: (json['responseTimeSeconds'] as num).toDouble(),
         errorCount: json['errorCount'] as int,

@@ -36,6 +36,10 @@ CSV_COLUMNS = [
 WORD_PATTERN = re.compile(r"^[a-z]+(?:['-][a-z]+)?$")
 PRONUNCIATION_PATTERN = re.compile(r"\s*\[\d{2}/.*?/\]\s*")
 MARKER_PATTERN = re.compile(r"\[\d{2}[^\]]*\]")
+CURATED_GLOSSES = {
+    "let": "cho phép, để cho",
+    "want": "muốn",
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -69,10 +73,12 @@ def _clean_meaning(raw: str) -> str | None:
         cleaned = line.lstrip("- ")
         cleaned = MARKER_PATTERN.sub("", cleaned)
         cleaned = re.sub(r"\s+", " ", cleaned).strip(" ;,")
+        lower = cleaned.lower()
         if (
             cleaned
-            and cleaned.lower() not in {"xem", "như"}
-            and not cleaned.lower().startswith(("xem ", "như "))
+            and not re.fullmatch(r"/[^/]+/", cleaned)
+            and lower not in {"xem", "như", "(như)"}
+            and not lower.startswith(("xem ", "như ", "(như)", "(cổ)"))
         ):
             return cleaned[:180]
     return None
@@ -109,6 +115,12 @@ def _duolingo_part_of_speech(value: str) -> str | None:
         "pr": "preposition",
         "cnjcoo": "conjunction",
         "cnjsub": "conjunction",
+        "cnjadv": "conjunction",
+        "preadv": "adverb",
+        "predet": "adjective",
+        "np": "noun",
+        "num": "adjective",
+        "rel": "pronoun",
     }.get(value)
 
 
@@ -183,6 +195,20 @@ class DictionaryLookup:
         return None
 
 
+def resolve_gloss(
+    dictionary: DictionaryLookup,
+    lemma: str,
+    word: str,
+    part_of_speech: str,
+) -> str | None:
+    override = CURATED_GLOSSES.get(lemma) or CURATED_GLOSSES.get(word)
+    if override is not None:
+        return override
+    return dictionary.lookup(lemma, part_of_speech) or dictionary.lookup(
+        word, part_of_speech
+    )
+
+
 def load_dictionary(directory: pathlib.Path) -> DictionaryLookup:
     raw_entries: dict[str, str] = {}
     files = sorted(directory.glob("directoryEng*.csv"))
@@ -246,6 +272,7 @@ def build_catalog(
     words: dict[str, dict[str, Any]] = {}
     rows_scanned = 0
     english_rows = 0
+    catalog_rows = 0
     first_timestamp: int | None = None
     last_timestamp: int | None = None
 
@@ -278,12 +305,11 @@ def build_catalog(
             word, lemma, part_of_speech = _parse_lexeme(row["lexeme_string"])
             if not WORD_PATTERN.fullmatch(word) or not 2 <= len(word) <= 24:
                 continue
-            meaning = dictionary.lookup(lemma, part_of_speech) or dictionary.lookup(
-                word, part_of_speech
-            )
+            meaning = resolve_gloss(dictionary, lemma, word, part_of_speech)
             if meaning is None:
                 continue
 
+            catalog_rows += 1
             stats = words.setdefault(word, _new_stats(word))
             stats["lemmas"][lemma] += 1
             stats["partsOfSpeech"][part_of_speech] += 1
@@ -311,13 +337,10 @@ def build_catalog(
         mean_recall = stats["recallSum"] / trace_count
         mean_history_seen = stats["historySeenSum"] / trace_count
         mean_history_correct = stats["historyCorrectSum"] / trace_count
-        prior_seen = min(max(round(mean_history_seen), 1), 20)
-        prior_correct = min(max(round(mean_history_correct), 0), prior_seen)
         session_seen = stats["totalSessionSeen"]
         session_accuracy = (
             stats["totalSessionCorrect"] / session_seen if session_seen else 0.5
         )
-        prior_errors = min(max(round((1.0 - session_accuracy) * 3), 0), 3)
         lemma = stats["lemmas"].most_common(1)[0][0]
         part_of_speech = stats["partsOfSpeech"].most_common(1)[0][0]
         meaning = stats["meanings"].most_common(1)[0][0]
@@ -337,11 +360,9 @@ def build_catalog(
                 "meanHistoryCorrect": mean_history_correct,
                 "totalSessionSeen": stats["totalSessionSeen"],
                 "totalSessionCorrect": stats["totalSessionCorrect"],
+                "sessionAccuracy": session_accuracy,
                 "firstTimestamp": stats["firstTimestamp"],
                 "lastTimestamp": stats["lastTimestamp"],
-                "initialHistorySeen": prior_seen,
-                "initialHistoryCorrect": prior_correct,
-                "initialErrorCount": prior_errors,
             }
         )
 
@@ -349,12 +370,14 @@ def build_catalog(
     if max_entries is not None:
         entries = entries[:max_entries]
     return {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "metadata": {
             "source": "duolingo_halflife_regression_dataset",
             "generatedAt": datetime.now(UTC).isoformat(),
             "rowsScanned": rows_scanned,
             "englishRows": english_rows,
+            "catalogRows": catalog_rows,
+            "droppedEnglishRows": english_rows - catalog_rows,
             "uniqueLearners": len(learners),
             "firstTimestamp": first_timestamp,
             "lastTimestamp": last_timestamp,

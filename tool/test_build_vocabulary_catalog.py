@@ -7,7 +7,12 @@ import unittest
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 
-from build_vocabulary_catalog import CSV_COLUMNS, build_catalog
+from build_vocabulary_catalog import (
+    CSV_COLUMNS,
+    DictionaryLookup,
+    build_catalog,
+    resolve_gloss,
+)
 
 
 class VocabularyCatalogPipelineTest(unittest.TestCase):
@@ -182,6 +187,8 @@ class VocabularyCatalogPipelineTest(unittest.TestCase):
             metadata = payload["metadata"]
             self.assertEqual(metadata["rowsScanned"], 10)
             self.assertEqual(metadata["englishRows"], 9)
+            self.assertEqual(metadata["catalogRows"], 9)
+            self.assertEqual(metadata["droppedEnglishRows"], 0)
             self.assertEqual(metadata["firstTimestamp"], 100)
             self.assertEqual(metadata["lastTimestamp"], 400)
             self.assertEqual(metadata["columnsUsed"], CSV_COLUMNS)
@@ -201,9 +208,9 @@ class VocabularyCatalogPipelineTest(unittest.TestCase):
             self.assertEqual(apple["firstTimestamp"], 100)
             self.assertEqual(apple["lastTimestamp"], 200)
             self.assertEqual(apple["lexemeCount"], 1)
-            self.assertEqual(apple["initialHistorySeen"], 3)
-            self.assertEqual(apple["initialHistoryCorrect"], 2)
-            self.assertEqual(apple["initialErrorCount"], 1)
+            self.assertAlmostEqual(apple["meanHistorySeen"], 3)
+            self.assertAlmostEqual(apple["meanHistoryCorrect"], 2)
+            self.assertAlmostEqual(apple["sessionAccuracy"], 2 / 3)
 
             self.assertEqual(entries["women"]["meaning"], "phụ nữ")
             self.assertEqual(entries["are"]["meaning"], "thì, là")
@@ -213,6 +220,21 @@ class VocabularyCatalogPipelineTest(unittest.TestCase):
             self.assertEqual(entries["my"]["meaning"], "của tôi")
             self.assertEqual(entries["we"]["meaning"], "chúng tôi, chúng ta")
             self.assertNotIn("hola", entries)
+
+    def test_rejects_dictionary_cross_references_and_applies_modern_glosses(self) -> None:
+        dictionary = DictionaryLookup(
+            {
+                "see": "[01* đtừ]\\n- /seen/\\n- thấy, nhìn thấy",
+                "turtle": "[01* dtừ]\\n- (như) [03turtle-dove]\\n- con rùa",
+                "let": "[01* ngđtừ]\\n- (cổ) ngăn cản\\n[01* ngđtừ let]\\n- để cho, cho phép",
+                "want": "[01* ngđtừ]\\n- thiếu\\n- muốn",
+            }
+        )
+
+        self.assertEqual(resolve_gloss(dictionary, "see", "see", "vblex"), "thấy, nhìn thấy")
+        self.assertEqual(resolve_gloss(dictionary, "turtle", "turtles", "n"), "con rùa")
+        self.assertEqual(resolve_gloss(dictionary, "let", "lets", "vblex"), "cho phép, để cho")
+        self.assertEqual(resolve_gloss(dictionary, "want", "wanted", "vblex"), "muốn")
 
 
 if __name__ == "__main__":

@@ -4,8 +4,8 @@
 
 ## Trạng thái hiện tại
 
-- Mini-game bắt từ rơi và giải mã chữ dùng kho **1.719 từ/cụm từ Anh–Việt**, không còn giới hạn ở 8 từ mẫu.
-- Kho từ được tạo từ **5.014.791 trace học tiếng Anh** trong toàn bộ **12.854.226 dòng** của bộ Duolingo HLR; pipeline kiểm tra và sử dụng đủ 12 cột CSV.
+- Mini-game bắt từ rơi và giải mã chữ dùng kho **1.718 từ/cụm từ Anh–Việt**, không còn giới hạn ở 8 từ mẫu.
+- Pipeline quét **5.014.791 trace học tiếng Anh** trong toàn bộ **12.854.226 dòng** của bộ Duolingo HLR; 4.689.398 trace ghép được nội dung hợp lệ cho mini-game và đủ 12 cột CSV đều có vai trò được tài liệu hóa.
 - Half-Life Regression (HLR) được huấn luyện trên toàn bộ dữ liệu: 11.530.392 dòng train, 1.323.834 dòng validation, MAE recall 0,11337.
 - HLR dự đoán xác suất nhớ, half-life và thời điểm ôn; planner ưu tiên từ có nguy cơ quên.
 - Bộ phân loại softmax dự đoán `quá tải / tập trung / nhàm chán` để chọn nhịp chơi và độ khó.

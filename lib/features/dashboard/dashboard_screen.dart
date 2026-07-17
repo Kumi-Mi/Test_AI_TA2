@@ -48,7 +48,7 @@ class DashboardScreen extends StatelessWidget {
                 children: [
                   MonoLabel(
                     '${_formatCount(catalog.catalogEntries)} từ · '
-                    '${_formatCount(catalog.englishRows)} trace tiếng Anh',
+                    '${_formatCount(catalog.catalogRows)} trace dùng trong game',
                   ),
                   const SizedBox(height: AppSpace.sm),
                   Text(
@@ -289,7 +289,7 @@ class _ModelExplanation extends StatelessWidget {
               const SizedBox(width: AppSpace.sm),
               Expanded(
                 child: Text(
-                  'HLR dùng ${_formatCount(corpusRows)} dòng / $corpusColumns cột dữ liệu để xếp từ theo xác suất nhớ. Softmax phân loại trạng thái phiên; suy luận chạy trên thiết bị.',
+                  'Pipeline quét ${_formatCount(corpusRows)} dòng / $corpusColumns cột CSV. HLR dùng tín hiệu trí nhớ; catalog cung cấp nội dung mini-game. Suy luận chạy trên thiết bị.',
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: AppColors.ink),
@@ -443,7 +443,7 @@ class _VocabularyRow extends StatelessWidget {
                       if (item.partOfSpeech != null)
                         _partOfSpeechLabel(item.partOfSpeech!),
                       '${_formatCount(item.traceCount)} trace · '
-                      '${item.lexemeCount} lexeme',
+                          '${item.lexemeCount} lexeme',
                     ].join(' · '),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),

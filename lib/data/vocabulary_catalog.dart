@@ -9,6 +9,8 @@ class VocabularyCatalogMetadata {
     required this.source,
     required this.rowsScanned,
     required this.englishRows,
+    required this.catalogRows,
+    required this.droppedEnglishRows,
     required this.uniqueLearners,
     required this.catalogEntries,
     required this.columnsUsed,
@@ -21,6 +23,8 @@ class VocabularyCatalogMetadata {
   final String source;
   final int rowsScanned;
   final int englishRows;
+  final int catalogRows;
+  final int droppedEnglishRows;
   final int uniqueLearners;
   final int catalogEntries;
   final List<String> columnsUsed;
@@ -39,6 +43,8 @@ class VocabularyCatalogMetadata {
       source: 'built_in_fallback',
       rowsScanned: 0,
       englishRows: 0,
+      catalogRows: 0,
+      droppedEnglishRows: 0,
       uniqueLearners: 0,
       catalogEntries: catalogEntries,
       columnsUsed: const [],
@@ -52,6 +58,8 @@ class VocabularyCatalogMetadata {
       source: json['source'] as String,
       rowsScanned: (json['rowsScanned'] as num).toInt(),
       englishRows: (json['englishRows'] as num).toInt(),
+      catalogRows: (json['catalogRows'] as num?)?.toInt() ?? 0,
+      droppedEnglishRows: (json['droppedEnglishRows'] as num?)?.toInt() ?? 0,
       uniqueLearners: (json['uniqueLearners'] as num).toInt(),
       catalogEntries: (json['catalogEntries'] as num).toInt(),
       columnsUsed: (json['columnsUsed'] as List<dynamic>)
@@ -79,15 +87,7 @@ class VocabularyCatalog {
         .map((catalogItem) {
           final progress = progressByWord[catalogItem.word.toLowerCase()];
           if (progress == null) return catalogItem;
-          return VocabularyMemory(
-            id: catalogItem.id,
-            word: catalogItem.word,
-            meaning: catalogItem.meaning,
-            lemma: catalogItem.lemma,
-            partOfSpeech: catalogItem.partOfSpeech,
-            traceCount: catalogItem.traceCount,
-            lexemeCount: catalogItem.lexemeCount,
-            datasetRecall: catalogItem.datasetRecall,
+          return catalogItem.copyWith(
             features: progress.features,
             lastSeenAt: progress.lastSeenAt,
           );
@@ -96,7 +96,7 @@ class VocabularyCatalog {
   }
 
   factory VocabularyCatalog.fromJson(Map<String, dynamic> json) {
-    if (json['schemaVersion'] != 1) {
+    if (json['schemaVersion'] != 2) {
       throw const FormatException('Unsupported vocabulary catalog schema.');
     }
     final metadata = VocabularyCatalogMetadata.fromJson(
@@ -105,14 +105,22 @@ class VocabularyCatalog {
     final entries = (json['entries'] as List<dynamic>)
         .map((raw) {
           final entry = raw as Map<String, dynamic>;
-          final meanDeltaHours = (entry['meanDeltaHours'] as num)
-              .toDouble()
-              .clamp(0.25, 8760)
-              .toDouble();
-          final initialSeen = (entry['initialHistorySeen'] as num).toInt();
-          final initialCorrect = (entry['initialHistoryCorrect'] as num)
-              .toInt()
-              .clamp(0, initialSeen);
+          final corpusPrior = VocabularyCorpusPrior(
+            meanRecall: (entry['meanRecall'] as num)
+                .toDouble()
+                .clamp(0.0001, 0.9999)
+                .toDouble(),
+            meanDeltaHours: (entry['meanDeltaHours'] as num)
+                .toDouble()
+                .clamp(0.25, 8760)
+                .toDouble(),
+            meanHistorySeen: (entry['meanHistorySeen'] as num).toDouble(),
+            meanHistoryCorrect: (entry['meanHistoryCorrect'] as num).toDouble(),
+            sessionAccuracy: (entry['sessionAccuracy'] as num)
+                .toDouble()
+                .clamp(0, 1)
+                .toDouble(),
+          );
           return VocabularyMemory(
             id: entry['id'] as String,
             word: entry['word'] as String,
@@ -124,16 +132,13 @@ class VocabularyCatalog {
                 (entry['lexemeIds'] as List<dynamic>?)?.length ??
                 (entry['lexemeCount'] as num?)?.toInt() ??
                 0,
-            datasetRecall: (entry['meanRecall'] as num)
-                .toDouble()
-                .clamp(0, 1)
-                .toDouble(),
-            features: WordMemoryFeatures(
+            corpusPrior: corpusPrior,
+            features: const WordMemoryFeatures(
               responseTimeSeconds: 2.5,
-              errorCount: (entry['initialErrorCount'] as num?)?.toInt() ?? 0,
-              hoursSinceLastSeen: meanDeltaHours,
-              historySeen: initialSeen,
-              historyCorrect: initialCorrect,
+              errorCount: 0,
+              hoursSinceLastSeen: 0,
+              historySeen: 0,
+              historyCorrect: 0,
             ),
           );
         })

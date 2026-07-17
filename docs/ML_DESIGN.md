@@ -9,24 +9,24 @@ File CSV gốc không được đưa nguyên vào APK. Hai pipeline streaming đ
 1. `train_hlr.py` học trọng số HLR và ghi `assets/models/memory_model.json`.
 2. `build_vocabulary_catalog.py` lọc trace có `learning_language=en`, tách surface/lemma/từ loại, ghép nghĩa FVDP và ghi `assets/data/duolingo_english_vocabulary.json`.
 
-Catalog hiện có 1.719 mục từ từ 5.014.791 trace tiếng Anh. Khi app khởi động, `VocabularyCatalog` nạp asset này; tiến trình cá nhân cũ được ghép theo từ nên người dùng không mất lịch sử.
+Catalog hiện có 1.718 mục từ. Pipeline quét 5.014.791 trace tiếng Anh, giữ 4.689.398 trace ghép được nghĩa hợp lệ và báo rõ 325.393 trace bị loại. Khi app khởi động, `VocabularyCatalog` nạp asset này; tiến trình cá nhân cũ được ghép theo từ nên người dùng không mất lịch sử.
 
 | Cột CSV | Cách sử dụng |
 | --- | --- |
 | `p_recall` | Nhãn huấn luyện HLR; mean recall của từng từ trong catalog |
 | `timestamp` | Khoảng thời gian corpus và mốc trace đầu/cuối của từng từ |
-| `delta` | Thời gian trên đường cong quên; prior `hoursSinceLastSeen` |
+| `delta` | Thời gian trên đường cong quên; mean delta của prior cộng đồng |
 | `user_id` | Chia train/validation theo người học và đếm learner duy nhất |
 | `learning_language` | Thống kê corpus và lọc nội dung tiếng Anh cho mini-game |
 | `ui_language` | Thống kê nhóm ngôn ngữ giao diện của trace tiếng Anh |
 | `lexeme_id` | Giữ truy vết và đếm các lexeme tạo nên một mục từ |
 | `lexeme_string` | Tạo surface word, lemma và part-of-speech để ghép đúng nghĩa |
-| `history_seen` | Đặc trưng HLR và prior số lần đã gặp |
-| `history_correct` | Đặc trưng độ chính xác và prior số lần đúng |
-| `session_seen` | Tổng lượt trong phiên; cùng `session_correct` tạo prior lỗi |
-| `session_correct` | Độ chính xác phiên và prior `errorCount` ban đầu |
+| `history_seen` | Đặc trưng HLR và độ mạnh của prior cộng đồng |
+| `history_correct` | Đặc trưng độ chính xác và độ tin cậy lịch sử của prior |
+| `session_seen` | Tổng lượt trong phiên để tính độ chính xác cộng đồng |
+| `session_correct` | Cùng `session_seen` tạo session accuracy cho prior |
 
-Các prior từ corpus chỉ khởi tạo thứ tự học. Ngay khi người dùng trả lời, thời gian phản xạ, đúng/sai và thời điểm gặp của chính họ sẽ cập nhật và được ưu tiên.
+Prior cộng đồng và tiến trình cá nhân là hai cấu trúc riêng. Người mới bắt đầu có `historySeen=0`, `historyCorrect=0`, `errorCount=0`; mean recall/delta/history/session của corpus chỉ khởi tạo thứ tự. Khi có câu trả lời thật, HLR trộn prior với tín hiệu cá nhân rồi làm trọng số prior giảm dần theo số lượt của người đó.
 
 ## 1. Mô hình trí nhớ từ vựng
 

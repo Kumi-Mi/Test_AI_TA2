@@ -71,4 +71,53 @@ class HalfLifeMemoryPredictor {
       nextReviewInHours: reviewDelay,
     );
   }
+
+  MemoryPrediction predictVocabulary(VocabularyMemory item) {
+    final prior = item.corpusPrior;
+    if (prior == null) return predict(item.features);
+
+    final priorRecall = prior.meanRecall.clamp(0.0001, 0.9999).toDouble();
+    final priorDelta = prior.meanDeltaHours.clamp(0.25, 8760).toDouble();
+    final priorHalfLife = (-priorDelta * math.ln2 / math.log(priorRecall))
+        .clamp(1, 8760)
+        .toDouble();
+    final personalSeen = item.features.historySeen;
+    if (personalSeen == 0) {
+      return MemoryPrediction(
+        recallProbability: priorRecall,
+        halfLifeHours: priorHalfLife,
+        nextReviewInHours: _reviewDelay(priorHalfLife),
+      );
+    }
+
+    final personal = predict(item.features);
+    final priorEvidence =
+        1 +
+        math.log(1 + prior.meanHistorySeen).clamp(0, 2) +
+        (prior.historicalAccuracy + prior.sessionAccuracy) / 2;
+    final priorWeight = priorEvidence / (priorEvidence + personalSeen);
+    final blendedHalfLife = math
+        .exp(
+          priorWeight * math.log(priorHalfLife) +
+              (1 - priorWeight) * math.log(personal.halfLifeHours),
+        )
+        .clamp(1, 8760)
+        .toDouble();
+    final elapsed = item.features.hoursSinceLastSeen.clamp(0, double.infinity);
+    final probability = math
+        .pow(2, -elapsed / blendedHalfLife)
+        .toDouble()
+        .clamp(0, 1)
+        .toDouble();
+    return MemoryPrediction(
+      recallProbability: probability,
+      halfLifeHours: blendedHalfLife,
+      nextReviewInHours: _reviewDelay(blendedHalfLife),
+    );
+  }
+
+  double _reviewDelay(double halfLife) =>
+      (-halfLife * math.log(targetRecall) / math.ln2)
+          .clamp(0.25, 8760)
+          .toDouble();
 }

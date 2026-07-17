@@ -138,13 +138,17 @@ class _MlLabScreenState extends State<MlLabScreen> {
               ),
               const SizedBox(height: AppSpace.xs),
               Text(
-                'Đã nạp ${widget.catalogMetadata.catalogEntries} từ từ ${widget.catalogMetadata.englishRows} trace tiếng Anh. Toàn bộ ${widget.catalogMetadata.columnsUsed.length} cột CSV được dùng cho model hoặc thống kê catalog.',
+                'Đã quét ${widget.catalogMetadata.englishRows} trace tiếng Anh; giữ ${widget.catalogMetadata.catalogRows} trace ghép được nghĩa cho ${widget.catalogMetadata.catalogEntries} từ và loại ${widget.catalogMetadata.droppedEnglishRows} trace không đủ điều kiện.',
               ),
               const SizedBox(height: AppSpace.xs),
               Text(
                 'Dữ liệu ${widget.catalogMetadata.tracePeriodLabel} · '
                 '${widget.catalogMetadata.languageCounts.length} ngôn ngữ học · '
                 '${widget.catalogMetadata.uiLanguageCounts.length} ngôn ngữ giao diện tiếng Anh.',
+              ),
+              const SizedBox(height: AppSpace.xs),
+              Text(
+                'Pipeline sử dụng đủ ${widget.catalogMetadata.columnsUsed.length} cột; từng model chỉ nhận các đặc trưng phù hợp mục tiêu.',
               ),
             ],
           ),

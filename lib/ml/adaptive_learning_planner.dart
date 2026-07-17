@@ -21,7 +21,7 @@ class AdaptiveLearningPlanner {
             .map(
               (item) => PlannedVocabulary(
                 item: item,
-                prediction: memoryPredictor.predict(item.features),
+                prediction: memoryPredictor.predictVocabulary(item),
               ),
             )
             .toList()

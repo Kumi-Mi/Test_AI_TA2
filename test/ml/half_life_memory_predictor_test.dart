@@ -70,4 +70,43 @@ void main() {
       lessThan(fluentResult.nextReviewInHours),
     );
   });
+
+  test('corpus prior seeds a new word without becoming personal history', () {
+    const item = VocabularyMemory(
+      id: 'want',
+      word: 'want',
+      meaning: 'muốn',
+      corpusPrior: VocabularyCorpusPrior(
+        meanRecall: 0.86,
+        meanDeltaHours: 196,
+        meanHistorySeen: 38,
+        meanHistoryCorrect: 32,
+        sessionAccuracy: 0.88,
+      ),
+      features: WordMemoryFeatures(
+        responseTimeSeconds: 2.5,
+        errorCount: 0,
+        hoursSinceLastSeen: 0,
+        historySeen: 0,
+        historyCorrect: 0,
+      ),
+    );
+
+    final coldStart = predictor.predictVocabulary(item);
+    final struggling = predictor.predictVocabulary(
+      item.copyWith(
+        features: const WordMemoryFeatures(
+          responseTimeSeconds: 7,
+          errorCount: 4,
+          hoursSinceLastSeen: 72,
+          historySeen: 12,
+          historyCorrect: 4,
+        ),
+      ),
+    );
+
+    expect(coldStart.recallProbability, closeTo(0.86, 0.001));
+    expect(item.features.historySeen, 0);
+    expect(struggling.recallProbability, lessThan(coldStart.recallProbability));
+  });
 }

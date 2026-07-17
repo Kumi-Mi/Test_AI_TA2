@@ -7,11 +7,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   test('catalog JSON becomes playable vocabulary with Duolingo priors', () {
     final catalog = VocabularyCatalog.fromJson({
-      'schemaVersion': 1,
+      'schemaVersion': 2,
       'metadata': {
         'source': 'duolingo_halflife_regression_dataset',
         'rowsScanned': 13000000,
         'englishRows': 5000000,
+        'catalogRows': 4700000,
+        'droppedEnglishRows': 300000,
         'uniqueLearners': 100000,
         'catalogEntries': 2400,
         'firstTimestamp': 1362082504,
@@ -44,15 +46,17 @@ void main() {
           'lexemeIds': ['woman-n-pl'],
           'meanRecall': 0.62,
           'meanDeltaHours': 72.0,
-          'initialHistorySeen': 6,
-          'initialHistoryCorrect': 4,
-          'initialErrorCount': 1,
+          'meanHistorySeen': 6.0,
+          'meanHistoryCorrect': 4.0,
+          'sessionAccuracy': 0.75,
         },
       ],
     });
 
     expect(catalog.metadata.rowsScanned, 13000000);
     expect(catalog.metadata.columnsUsed, hasLength(12));
+    expect(catalog.metadata.catalogRows, 4700000);
+    expect(catalog.metadata.droppedEnglishRows, 300000);
     expect(catalog.metadata.languageCounts, contains('en'));
     expect(catalog.metadata.uiLanguageCounts, contains('es'));
     expect(catalog.metadata.firstTraceAt, isNotNull);
@@ -63,19 +67,24 @@ void main() {
     expect(catalog.vocabulary.single.traceCount, 320);
     expect(catalog.vocabulary.single.lexemeCount, 1);
     expect(catalog.vocabulary.single.datasetRecall, 0.62);
-    expect(catalog.vocabulary.single.features.hoursSinceLastSeen, 72);
-    expect(catalog.vocabulary.single.features.historySeen, 6);
-    expect(catalog.vocabulary.single.features.historyCorrect, 4);
-    expect(catalog.vocabulary.single.features.errorCount, 1);
+    expect(catalog.vocabulary.single.corpusPrior!.meanDeltaHours, 72);
+    expect(catalog.vocabulary.single.corpusPrior!.meanHistorySeen, 6);
+    expect(catalog.vocabulary.single.corpusPrior!.sessionAccuracy, 0.75);
+    expect(catalog.vocabulary.single.features.hoursSinceLastSeen, 0);
+    expect(catalog.vocabulary.single.features.historySeen, 0);
+    expect(catalog.vocabulary.single.features.historyCorrect, 0);
+    expect(catalog.vocabulary.single.features.errorCount, 0);
   });
 
   test('catalog keeps personal progress while refreshing dataset metadata', () {
     final catalog = VocabularyCatalog.fromJson({
-      'schemaVersion': 1,
+      'schemaVersion': 2,
       'metadata': {
         'source': 'duolingo_halflife_regression_dataset',
         'rowsScanned': 10,
         'englishRows': 10,
+        'catalogRows': 9,
+        'droppedEnglishRows': 1,
         'uniqueLearners': 2,
         'catalogEntries': 1,
         'firstTimestamp': 100,
@@ -95,9 +104,9 @@ void main() {
           'lexemeIds': ['woman-n-pl'],
           'meanRecall': 0.62,
           'meanDeltaHours': 72.0,
-          'initialHistorySeen': 6,
-          'initialHistoryCorrect': 4,
-          'initialErrorCount': 1,
+          'meanHistorySeen': 6.0,
+          'meanHistoryCorrect': 4.0,
+          'sessionAccuracy': 0.75,
         },
       ],
     });
@@ -140,5 +149,10 @@ void main() {
     expect(controller.catalogMetadata.rowsScanned, greaterThan(12000000));
     expect(controller.vocabulary.length, greaterThan(1000));
     expect(controller.vocabulary.any((item) => item.word == 'apple'), isTrue);
+    final byWord = {for (final item in controller.vocabulary) item.word: item};
+    expect(byWord['see']!.meaning, contains('thấy'));
+    expect(byWord['turtles']!.meaning, contains('rùa'));
+    expect(byWord['want']!.meaning, 'muốn');
+    expect(byWord['let']!.meaning, 'cho phép, để cho');
   });
 }

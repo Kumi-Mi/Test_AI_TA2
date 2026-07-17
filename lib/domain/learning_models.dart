@@ -86,6 +86,26 @@ class DifficultyRecommendation {
   final String reason;
 }
 
+class VocabularyCorpusPrior {
+  const VocabularyCorpusPrior({
+    required this.meanRecall,
+    required this.meanDeltaHours,
+    required this.meanHistorySeen,
+    required this.meanHistoryCorrect,
+    required this.sessionAccuracy,
+  });
+
+  final double meanRecall;
+  final double meanDeltaHours;
+  final double meanHistorySeen;
+  final double meanHistoryCorrect;
+  final double sessionAccuracy;
+
+  double get historicalAccuracy => meanHistorySeen <= 0
+      ? 0.5
+      : (meanHistoryCorrect / meanHistorySeen).clamp(0, 1);
+}
+
 class VocabularyMemory {
   const VocabularyMemory({
     required this.id,
@@ -97,7 +117,7 @@ class VocabularyMemory {
     this.partOfSpeech,
     this.traceCount = 0,
     this.lexemeCount = 0,
-    this.datasetRecall,
+    this.corpusPrior,
   });
 
   final String id;
@@ -109,7 +129,27 @@ class VocabularyMemory {
   final String? partOfSpeech;
   final int traceCount;
   final int lexemeCount;
-  final double? datasetRecall;
+  final VocabularyCorpusPrior? corpusPrior;
+
+  double? get datasetRecall => corpusPrior?.meanRecall;
+
+  VocabularyMemory copyWith({
+    WordMemoryFeatures? features,
+    DateTime? lastSeenAt,
+  }) {
+    return VocabularyMemory(
+      id: id,
+      word: word,
+      meaning: meaning,
+      features: features ?? this.features,
+      lastSeenAt: lastSeenAt ?? this.lastSeenAt,
+      lemma: lemma,
+      partOfSpeech: partOfSpeech,
+      traceCount: traceCount,
+      lexemeCount: lexemeCount,
+      corpusPrior: corpusPrior,
+    );
+  }
 
   VocabularyMemory atTime(DateTime now) {
     if (lastSeenAt == null) return this;
@@ -117,19 +157,10 @@ class VocabularyMemory {
     final elapsedHours = elapsedMilliseconds <= 0
         ? 0.0
         : elapsedMilliseconds / Duration.millisecondsPerHour;
-    return VocabularyMemory(
-      id: id,
-      word: word,
-      meaning: meaning,
+    return copyWith(
       features: features.copyWith(
         hoursSinceLastSeen: features.hoursSinceLastSeen + elapsedHours,
       ),
-      lastSeenAt: lastSeenAt,
-      lemma: lemma,
-      partOfSpeech: partOfSpeech,
-      traceCount: traceCount,
-      lexemeCount: lexemeCount,
-      datasetRecall: datasetRecall,
     );
   }
 }
