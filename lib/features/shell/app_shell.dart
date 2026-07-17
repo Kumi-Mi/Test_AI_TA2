@@ -39,17 +39,7 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
-    final screens = <Widget>[
-      DashboardScreen(
-        controller: widget.controller,
-        openGame: () => setState(() => _selected = _AppDestination.game),
-        openCustomInput: () =>
-            setState(() => _selected = _AppDestination.custom),
-      ),
-      AdaptiveGameScreen(controller: widget.controller),
-      const CustomInputScreen(),
-      const MlLabScreen(),
-    ];
+    final screens = _AppDestination.values.map(_screenFor).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -87,6 +77,17 @@ class _AppShellState extends State<AppShell> {
       ),
     );
   }
+
+  Widget _screenFor(_AppDestination destination) => switch (destination) {
+    _AppDestination.today => DashboardScreen(
+      controller: widget.controller,
+      openGame: () => setState(() => _selected = _AppDestination.game),
+      openCustomInput: () => setState(() => _selected = _AppDestination.custom),
+    ),
+    _AppDestination.game => AdaptiveGameScreen(controller: widget.controller),
+    _AppDestination.custom => const CustomInputScreen(),
+    _AppDestination.lab => const MlLabScreen(),
+  };
 }
 
 class _SlabNavigation extends StatelessWidget {
