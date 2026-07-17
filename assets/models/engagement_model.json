@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "model": "multiclass_softmax",
+  "source": "cold_start_baseline",
+  "featureOrder": [
+    "bias",
+    "winRate",
+    "wins",
+    "losses",
+    "session",
+    "extended",
+    "fast",
+    "slow",
+    "fatigue",
+    "winBalance",
+    "speedBalance",
+    "notExtended"
+  ],
+  "coefficients": {
+    "overloaded": [-1.1, 0, 0, 1.4, 0, 2.6, 0, 0.8, 2.8, 0, 0, 0],
+    "focused": [0.8, 0, 0, 0, 0, 0, 0, 0, 0, 1.1, 0.8, 0.5],
+    "bored": [-1, 2.2, 1.8, 0, -2.3, 0, 2, 0, 0, 0, 0, 0]
+  },
+  "note": "Replace with weights trained from labelled app sessions using tool/train_engagement.py."
+}
