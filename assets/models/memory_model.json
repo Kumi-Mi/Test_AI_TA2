@@ -1,14 +1,25 @@
 {
   "schemaVersion": 1,
   "model": "half_life_regression",
-  "source": "cold_start_baseline",
-  "featureOrder": ["bias", "seen", "accuracy", "responseTime", "errors"],
+  "source": "duolingo_halflife_regression_dataset",
+  "featureOrder": [
+    "bias",
+    "seen",
+    "accuracy",
+    "responseTime",
+    "errors"
+  ],
   "weights": {
-    "bias": 5.0,
-    "seen": 0.55,
-    "accuracy": 2.2,
+    "bias": 6.618640006748389,
+    "seen": 2.969423874940922,
+    "accuracy": 2.8208350713799932,
     "responseTime": -0.65,
     "errors": -0.8
   },
-  "note": "Run tool/train_hlr.py on the Duolingo CSV to replace the first three weights. Fine-tune responseTime and errors on app events."
+  "training": {
+    "rows": 90528,
+    "validationRows": 9472,
+    "validationMaeRecall": 0.11800098377839063,
+    "split": "user_id crc32; 90% train / 10% validation"
+  }
 }

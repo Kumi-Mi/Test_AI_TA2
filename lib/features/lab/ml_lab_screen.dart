@@ -135,7 +135,7 @@ class _MlLabScreenState extends State<MlLabScreen> {
               ),
               SizedBox(height: AppSpace.xs),
               Text(
-                'Duolingo cung cấp p_recall, delta, history_seen và history_correct. Artifact đang chạy là baseline chưa huấn luyện; script HLR sẽ thay trọng số sau khi tải bộ dữ liệu 13 triệu trace.',
+                'Duolingo cung cấp p_recall, delta, history_seen và history_correct. App nạp artifact memory_model.json; trường source và training trong tệp cho biết provenance cùng kết quả validation.',
               ),
             ],
           ),
