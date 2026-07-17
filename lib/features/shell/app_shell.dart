@@ -4,8 +4,26 @@ import '../../data/learning_session_controller.dart';
 import '../../theme/design_tokens.dart';
 import '../custom_input/custom_input_screen.dart';
 import '../dashboard/dashboard_screen.dart';
-import '../game/word_catch_screen.dart';
+import '../game/adaptive_game_screen.dart';
 import '../lab/ml_lab_screen.dart';
+
+enum _AppDestination { today, game, custom, lab }
+
+extension on _AppDestination {
+  IconData get icon => switch (this) {
+    _AppDestination.today => Icons.route_outlined,
+    _AppDestination.game => Icons.sports_esports_outlined,
+    _AppDestination.custom => Icons.mic_none_rounded,
+    _AppDestination.lab => Icons.science_outlined,
+  };
+
+  String get label => switch (this) {
+    _AppDestination.today => 'Hôm nay',
+    _AppDestination.game => 'Mini-game',
+    _AppDestination.custom => 'Custom',
+    _AppDestination.lab => 'ML Lab',
+  };
+}
 
 class AppShell extends StatefulWidget {
   const AppShell({required this.controller, super.key});
@@ -17,17 +35,18 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
-  int _selectedIndex = 0;
+  _AppDestination _selected = _AppDestination.today;
 
   @override
   Widget build(BuildContext context) {
     final screens = <Widget>[
       DashboardScreen(
         controller: widget.controller,
-        openGame: () => setState(() => _selectedIndex = 1),
-        openCustomInput: () => setState(() => _selectedIndex = 2),
+        openGame: () => setState(() => _selected = _AppDestination.game),
+        openCustomInput: () =>
+            setState(() => _selected = _AppDestination.custom),
       ),
-      WordCatchScreen(controller: widget.controller),
+      AdaptiveGameScreen(controller: widget.controller),
       const CustomInputScreen(),
       const MlLabScreen(),
     ];
@@ -60,31 +79,21 @@ class _AppShellState extends State<AppShell> {
       ),
       body: SafeArea(
         top: false,
-        child: IndexedStack(index: _selectedIndex, children: screens),
+        child: IndexedStack(index: _selected.index, children: screens),
       ),
       bottomNavigationBar: _SlabNavigation(
-        selectedIndex: _selectedIndex,
-        onSelected: (index) => setState(() => _selectedIndex = index),
+        selected: _selected,
+        onSelected: (destination) => setState(() => _selected = destination),
       ),
     );
   }
 }
 
 class _SlabNavigation extends StatelessWidget {
-  const _SlabNavigation({
-    required this.selectedIndex,
-    required this.onSelected,
-  });
+  const _SlabNavigation({required this.selected, required this.onSelected});
 
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
-
-  static const destinations = [
-    (Icons.route_outlined, 'Hôm nay'),
-    (Icons.sports_esports_outlined, 'Mini-game'),
-    (Icons.mic_none_rounded, 'Custom'),
-    (Icons.science_outlined, 'ML Lab'),
-  ];
+  final _AppDestination selected;
+  final ValueChanged<_AppDestination> onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -96,28 +105,27 @@ class _SlabNavigation extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Row(
-          children: List.generate(destinations.length, (index) {
-            final destination = destinations[index];
-            final selected = index == selectedIndex;
+          children: _AppDestination.values.map((destination) {
+            final isSelected = destination == selected;
             return Expanded(
               child: Semantics(
-                selected: selected,
+                selected: isSelected,
                 button: true,
-                label: destination.$2,
+                label: destination.label,
                 child: InkWell(
-                  onTap: () => onSelected(index),
+                  onTap: () => onSelected(destination),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
                     constraints: const BoxConstraints(minHeight: 64),
-                    color: selected ? AppColors.pear : AppColors.paper,
+                    color: isSelected ? AppColors.pear : AppColors.paper,
                     padding: const EdgeInsets.symmetric(vertical: AppSpace.xs),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(destination.$1, size: 23),
+                        Icon(destination.icon, size: 23),
                         const SizedBox(height: AppSpace.xxs),
                         Text(
-                          destination.$2,
+                          destination.label,
                           maxLines: 1,
                           overflow: TextOverflow.fade,
                           softWrap: false,
@@ -133,7 +141,7 @@ class _SlabNavigation extends StatelessWidget {
                 ),
               ),
             );
-          }),
+          }).toList(),
         ),
       ),
     );

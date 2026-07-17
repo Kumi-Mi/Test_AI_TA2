@@ -24,6 +24,7 @@ class _WordCatchScreenState extends State<WordCatchScreen>
   bool _locked = false;
   bool _finished = false;
   bool? _lastCorrect;
+  LearningDifficulty _difficulty = LearningDifficulty.balanced;
   DateTime _roundStartedAt = DateTime.now();
 
   @override
@@ -45,8 +46,11 @@ class _WordCatchScreenState extends State<WordCatchScreen>
   }
 
   void _start() {
+    final plan = widget.controller.plan;
+    final difficulty = plan.recommendation.difficulty;
     setState(() {
-      _roundItems = widget.controller.plan.orderedVocabulary.take(6).toList();
+      _roundItems = plan.orderedVocabulary.take(6).toList();
+      _difficulty = difficulty;
       _round = 0;
       _score = 0;
       _playing = true;
@@ -55,6 +59,9 @@ class _WordCatchScreenState extends State<WordCatchScreen>
       _lastCorrect = null;
       _roundStartedAt = DateTime.now();
     });
+    _fallController.duration = Duration(
+      seconds: difficulty == LearningDifficulty.gentleReview ? 11 : 7,
+    );
     _fallController.forward(from: 0);
   }
 
@@ -62,8 +69,9 @@ class _WordCatchScreenState extends State<WordCatchScreen>
 
   List<PlannedVocabulary> get _choices {
     if (_roundItems.isEmpty) return const [];
+    final count = _difficulty == LearningDifficulty.gentleReview ? 2 : 3;
     return List.generate(
-      3,
+      count,
       (index) => _roundItems[(_round + index) % _roundItems.length],
     );
   }
@@ -166,11 +174,13 @@ class _WordCatchScreenState extends State<WordCatchScreen>
                             : AppColors.danger,
                       ),
                       const SizedBox(width: AppSpace.xs),
-                      Text(
-                        _lastCorrect!
-                            ? 'Đúng. HLR đã cập nhật lần gặp này.'
-                            : 'Chưa đúng. Từ này sẽ được ôn sớm hơn.',
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      Expanded(
+                        child: Text(
+                          _lastCorrect!
+                              ? 'Đúng. HLR đã cập nhật lần gặp này.'
+                              : 'Chưa đúng. Từ này sẽ được ôn sớm hơn.',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ],
                   ),
@@ -187,7 +197,9 @@ class _WordCatchScreenState extends State<WordCatchScreen>
                     0,
                     double.infinity,
                   );
-                  const fractions = [0.04, 0.5, 0.96];
+                  final fractions = _choices.length == 2
+                      ? const [0.06, 0.94]
+                      : const [0.04, 0.5, 0.96];
                   return AnimatedBuilder(
                     animation: _fallController,
                     builder: (context, _) {

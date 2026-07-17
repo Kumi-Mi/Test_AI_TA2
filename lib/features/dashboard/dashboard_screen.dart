@@ -130,7 +130,6 @@ class _PlanWorkbench extends StatelessWidget {
     final gameLabel = switch (plan.game) {
       MiniGameType.wordCatch => 'Bắt từ rơi',
       MiniGameType.textCipher => 'Giải mã văn bản',
-      MiniGameType.shadowSpeaking => 'Nghe và nói đuổi',
     };
 
     return LearnflowCard(

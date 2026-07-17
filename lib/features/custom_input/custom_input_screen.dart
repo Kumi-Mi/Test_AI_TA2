@@ -7,6 +7,24 @@ import '../../services/pronunciation_scorer.dart';
 import '../../theme/design_tokens.dart';
 import '../../widgets/learnflow_components.dart';
 
+extension on PracticeMode {
+  String get displayLabel => switch (this) {
+    PracticeMode.listening => 'Nghe',
+    PracticeMode.speaking => 'Nói',
+    PracticeMode.reading => 'Đọc',
+    PracticeMode.writing => 'Viết',
+  };
+
+  String get exerciseLabel => displayLabel.toLowerCase();
+
+  Color get displayColor => switch (this) {
+    PracticeMode.listening => AppColors.cyan,
+    PracticeMode.speaking => AppColors.coral,
+    PracticeMode.reading => AppColors.pear,
+    PracticeMode.writing => AppColors.lavender,
+  };
+}
+
 class CustomInputScreen extends StatefulWidget {
   const CustomInputScreen({super.key});
 
@@ -193,8 +211,8 @@ class _CustomInputScreenState extends State<CustomInputScreen> {
                 _exercise = null;
                 _score = null;
               }),
-              label: Text(_modeLabel(mode)),
-              selectedColor: _modeColor(mode),
+              label: Text(mode.displayLabel),
+              selectedColor: mode.displayColor,
               backgroundColor: AppColors.paperDeep,
               side: BorderSide.none,
               showCheckmark: false,
@@ -228,20 +246,6 @@ class _CustomInputScreenState extends State<CustomInputScreen> {
       ],
     );
   }
-
-  String _modeLabel(PracticeMode mode) => switch (mode) {
-    PracticeMode.listening => 'Nghe',
-    PracticeMode.speaking => 'Nói',
-    PracticeMode.reading => 'Đọc',
-    PracticeMode.writing => 'Viết',
-  };
-
-  Color _modeColor(PracticeMode mode) => switch (mode) {
-    PracticeMode.listening => AppColors.cyan,
-    PracticeMode.speaking => AppColors.coral,
-    PracticeMode.reading => AppColors.pear,
-    PracticeMode.writing => AppColors.lavender,
-  };
 }
 
 class _ExerciseWorkbench extends StatelessWidget {
@@ -272,11 +276,11 @@ class _ExerciseWorkbench extends StatelessWidget {
     final isSpeaking = exercise.mode == PracticeMode.speaking;
     final showTarget = exercise.mode == PracticeMode.speaking;
     return LearnflowCard(
-      color: _surface(exercise.mode),
+      color: exercise.mode.displayColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MonoLabel('Bài ${_label(exercise.mode)}', color: AppColors.ink),
+          MonoLabel('Bài ${exercise.mode.exerciseLabel}', color: AppColors.ink),
           const SizedBox(height: AppSpace.sm),
           Text(exercise.prompt, style: Theme.of(context).textTheme.titleLarge),
           if (showTarget) ...[
@@ -354,20 +358,6 @@ class _ExerciseWorkbench extends StatelessWidget {
       ),
     );
   }
-
-  static String _label(PracticeMode mode) => switch (mode) {
-    PracticeMode.listening => 'nghe',
-    PracticeMode.speaking => 'nói',
-    PracticeMode.reading => 'đọc',
-    PracticeMode.writing => 'viết',
-  };
-
-  static Color _surface(PracticeMode mode) => switch (mode) {
-    PracticeMode.listening => AppColors.cyan,
-    PracticeMode.speaking => AppColors.coral,
-    PracticeMode.reading => AppColors.pear,
-    PracticeMode.writing => AppColors.lavender,
-  };
 }
 
 class _ScoreResult extends StatelessWidget {

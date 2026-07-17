@@ -49,4 +49,34 @@ void main() {
       expect(plan.game, MiniGameType.wordCatch);
     },
   );
+
+  test('a focused learner keeps the gentle word-catch game', () {
+    const session = SessionFeatures(
+      winRate: 0.68,
+      consecutiveWins: 2,
+      consecutiveLosses: 0,
+      completionSpeedRatio: 1,
+      sessionMinutes: 18,
+    );
+
+    final plan = planner.compose(session: session, vocabulary: const []);
+
+    expect(plan.recommendation.difficulty, LearningDifficulty.balanced);
+    expect(plan.game, MiniGameType.wordCatch);
+  });
+
+  test('a bored learner is routed to the text-cipher challenge', () {
+    const session = SessionFeatures(
+      winRate: 0.96,
+      consecutiveWins: 7,
+      consecutiveLosses: 0,
+      completionSpeedRatio: 0.55,
+      sessionMinutes: 12,
+    );
+
+    final plan = planner.compose(session: session, vocabulary: const []);
+
+    expect(plan.recommendation.difficulty, LearningDifficulty.challenge);
+    expect(plan.game, MiniGameType.textCipher);
+  });
 }

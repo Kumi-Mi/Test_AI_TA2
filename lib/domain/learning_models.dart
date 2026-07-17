@@ -2,7 +2,7 @@ enum EngagementState { overloaded, focused, bored }
 
 enum LearningDifficulty { gentleReview, balanced, challenge }
 
-enum MiniGameType { wordCatch, textCipher, shadowSpeaking }
+enum MiniGameType { wordCatch, textCipher }
 
 class WordMemoryFeatures {
   const WordMemoryFeatures({

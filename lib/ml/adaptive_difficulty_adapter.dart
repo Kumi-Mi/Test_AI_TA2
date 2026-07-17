@@ -14,7 +14,7 @@ class AdaptiveDifficultyAdapter {
 
   final EngagementModelWeights weights;
 
-  DifficultyRecommendation recommend(SessionFeatures input) {
+  List<double> featureVector(SessionFeatures input) {
     final winRate = input.winRate.clamp(0, 1).toDouble();
     final wins = (input.consecutiveWins / 8).clamp(0, 1).toDouble();
     final losses = (input.consecutiveLosses / 6).clamp(0, 1).toDouble();
@@ -25,7 +25,7 @@ class AdaptiveDifficultyAdapter {
     final streakLoad = math.max(wins, losses);
     final fatigue = session * (0.35 + 0.65 * streakLoad);
 
-    final features = <double>[
+    return <double>[
       1,
       winRate,
       wins,
@@ -39,6 +39,10 @@ class AdaptiveDifficultyAdapter {
       (1 - (input.completionSpeedRatio - 1).abs()).clamp(0, 1).toDouble(),
       1 - extended,
     ];
+  }
+
+  DifficultyRecommendation recommend(SessionFeatures input) {
+    final features = featureVector(input);
     final logits = {
       for (final state in EngagementState.values)
         state: _dot(weights.forState(state), features),
@@ -105,15 +109,49 @@ class EngagementModelWeights {
 
   final List<List<double>> coefficients;
 
+  static const featureOrder = <String>[
+    'bias',
+    'winRate',
+    'wins',
+    'losses',
+    'session',
+    'extended',
+    'fast',
+    'slow',
+    'fatigue',
+    'winBalance',
+    'speedBalance',
+    'notExtended',
+  ];
+
   List<double> forState(EngagementState state) => coefficients[state.index];
 
   factory EngagementModelWeights.fromJson(Map<String, dynamic> json) {
+    final rawOrder = (json['featureOrder'] as List<dynamic>?)
+        ?.map((value) => value as String)
+        .toList();
+    if (rawOrder == null || !_sameOrder(rawOrder, featureOrder)) {
+      throw const FormatException('Unsupported engagement feature order.');
+    }
     final raw = json['coefficients'] as Map<String, dynamic>;
     return EngagementModelWeights(
       coefficients: EngagementState.values.map((state) {
         final values = raw[state.name] as List<dynamic>;
+        if (values.length != featureOrder.length) {
+          throw FormatException(
+            'Expected ${featureOrder.length} coefficients for ${state.name}.',
+          );
+        }
         return values.map((value) => (value as num).toDouble()).toList();
       }).toList(),
     );
+  }
+
+  static bool _sameOrder(List<String> left, List<String> right) {
+    if (left.length != right.length) return false;
+    for (var index = 0; index < left.length; index++) {
+      if (left[index] != right[index]) return false;
+    }
+    return true;
   }
 }

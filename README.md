@@ -4,7 +4,7 @@ MVP Flutter cho đề tài **“Mobile App học tiếng Anh và ứng dụng h�
 
 ## Những gì đã chạy được
 
-- Mini-game từ vựng rơi ghi thời gian phản xạ và đúng/sai sau từng lượt.
+- Mini-game từ vựng rơi và giải mã chữ ghi thời gian phản xạ, đúng/sai sau từng lượt.
 - Half-Life Regression dự đoán xác suất nhớ, half-life và thời điểm ôn tiếp theo.
 - Softmax ba lớp dự đoán `quá tải / tập trung / nhàm chán` để chọn độ khó.
 - Custom Input biến đoạn văn riêng thành bài Nghe, Nói, Đọc hoặc Viết.

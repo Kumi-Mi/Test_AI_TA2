@@ -11,15 +11,17 @@ import '../ml/half_life_memory_predictor.dart';
 
 class LearningSessionController extends ChangeNotifier {
   LearningSessionController._({
-    required this._vocabulary,
+    required List<VocabularyMemory> vocabulary,
     this._preferences,
     this._planner = const AdaptiveLearningPlanner(),
-  });
+  }) : _vocabulary = vocabulary,
+       _baselineResponseSeconds = _meanResponseSeconds(vocabulary);
 
   static const _storageKey = 'learnflow_vocabulary_v1';
   final SharedPreferences? _preferences;
   final AdaptiveLearningPlanner _planner;
   final DateTime _startedAt = DateTime.now();
+  final double _baselineResponseSeconds;
   List<VocabularyMemory> _vocabulary;
   int _wins = 0;
   int _losses = 0;
@@ -52,8 +54,10 @@ class LearningSessionController extends ChangeNotifier {
     );
   }
 
-  factory LearningSessionController.demo() {
-    return LearningSessionController._(vocabulary: List.of(_seedVocabulary));
+  factory LearningSessionController.demo({List<VocabularyMemory>? vocabulary}) {
+    return LearningSessionController._(
+      vocabulary: List.of(vocabulary ?? _seedVocabulary),
+    );
   }
 
   List<VocabularyMemory> get vocabulary {
@@ -78,7 +82,10 @@ class LearningSessionController extends ChangeNotifier {
       winRate: _wins / total,
       consecutiveWins: _consecutiveWins,
       consecutiveLosses: _consecutiveLosses,
-      completionSpeedRatio: (averageResponse / 2.5).clamp(0.35, 2),
+      completionSpeedRatio: (averageResponse / _baselineResponseSeconds).clamp(
+        0.35,
+        2,
+      ),
       sessionMinutes: elapsedMinutes.clamp(1, 120),
     );
   }
@@ -101,7 +108,7 @@ class LearningSessionController extends ChangeNotifier {
     final oldFeatures = old.features;
     final newFeatures = WordMemoryFeatures(
       responseTimeSeconds: responseSeconds.clamp(0.2, 30),
-      errorCount: correct ? 0 : oldFeatures.errorCount + 1,
+      errorCount: oldFeatures.errorCount + (correct ? 0 : 1),
       hoursSinceLastSeen: 0,
       historySeen: oldFeatures.historySeen + 1,
       historyCorrect: oldFeatures.historyCorrect + (correct ? 1 : 0),
@@ -196,6 +203,15 @@ class LearningSessionController extends ChangeNotifier {
     } on Object {
       return const AdaptiveLearningPlanner();
     }
+  }
+
+  static double _meanResponseSeconds(List<VocabularyMemory> vocabulary) {
+    if (vocabulary.isEmpty) return 2.5;
+    final total = vocabulary.fold<double>(
+      0,
+      (sum, item) => sum + item.features.responseTimeSeconds,
+    );
+    return (total / vocabulary.length).clamp(0.5, 10);
   }
 
   static const _seedVocabulary = <VocabularyMemory>[

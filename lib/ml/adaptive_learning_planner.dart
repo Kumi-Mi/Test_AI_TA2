@@ -33,7 +33,7 @@ class AdaptiveLearningPlanner {
 
     final game = switch (recommendation.difficulty) {
       LearningDifficulty.gentleReview => MiniGameType.wordCatch,
-      LearningDifficulty.balanced => MiniGameType.shadowSpeaking,
+      LearningDifficulty.balanced => MiniGameType.wordCatch,
       LearningDifficulty.challenge => MiniGameType.textCipher,
     };
 
